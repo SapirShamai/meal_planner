@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Recipe Manager and Meal Planner</title>
+    <!-- Add CSS and JavaScript here -->
+</head>
+<body>
+    <h1>Hello {{ user.username }}!</h1>
+    <h2>Here are your available recipes:</h2>
+    <ul>
+        {% for recipe in recipes %}
+            <li>
+                 <a href="{% url 'recipes:recipe_details' recipe.id %}">{{ recipe.title }}</a>
+            </li>
+        {% empty %}
+            <li>No recipes available.</li>
+        {% endfor %}
+    </ul>
+    <!-- You can add more sections here as per your requirements -->
+</body>
+</html>

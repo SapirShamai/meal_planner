@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ recipe.title }}</title>
+    <!-- Add CSS and JavaScript here -->
+</head>
+<body>
+    <h1>{{ recipe.title }}</h1>
+    <p>{{ recipe.description }}</p>
+    <img src="{{ recipe.image }}" alt="Recipe photo">
+    <h2>Ingredients</h2>
+    <ul>
+        {% for ingredient in recipe.ingredients %}
+            <li>{{ ingredient.ingredient.name }}: {{ ingredient.quantity }}</li>
+        {% endfor %}
+    </ul>
+    <h2>Cooking instructions</h2>
+    <p>{{ recipe.cooking_instructions }}</p>
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+</head>
+<body>
+      <header>
+        <h1>Welcome to the Recipe and Meal Planner</h1>
+    </header>
+
+    <main>
+        {% if user.is_authenticated %}
+        <p>Welcome back, {{ user.username }}! Let's start planning your next meal.</p>
+        <a href="{% url 'users:logout' %}">Logout</a>
+        {% else %}
+        <p>Please <a href="{% url 'users:login' %}">login</a> or <a href="{% url 'users:register' %}">register</a> to start planning your meals.</p>
+        {% endif %}
+    </main>
+
+    <footer>
+        <p>Recipe and Meal Planner &copy; 2023</p>
+    </footer>
+</body>
+</html>
