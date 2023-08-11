@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Ingredient(models.Model):
@@ -16,6 +17,8 @@ class Recipe(models.Model):
     ingredients = models.ManyToManyField(Ingredient, through='RecipeIngredient')
     cooking_instructions = models.TextField()
     image = models.ImageField(upload_to='recipes/', null=True, blank=True)
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    is_public = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title

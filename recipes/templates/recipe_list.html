@@ -9,9 +9,11 @@
     <h2>Here are your available recipes:</h2>
     <ul>
         {% for recipe in recipes %}
+        <h2>{{ recipe }}</h2>
             <li>
                  <a href="{% url 'recipes:recipe_details' recipe.id %}">{{ recipe.title }}</a>
             </li>
+
         {% empty %}
             <li>No recipes available.</li>
         {% endfor %}

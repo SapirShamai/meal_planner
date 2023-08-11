@@ -37,10 +37,11 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
 class RecipeSerializer(serializers.ModelSerializer):
     """ Recipe serializer """
     ingredients = RecipeIngredientSerializer(source='recipeingredient_set', many=True)
+    user = serializers.ReadOnlyField(source='user.id')
 
     class Meta:
         model = Recipe
-        fields = ['id', 'title', 'description', 'cooking_instructions', 'image', 'ingredients']
+        fields = ['id', 'title', 'description', 'cooking_instructions', 'image', 'ingredients', 'user', 'is_public']
 
     def create(self, validated_data):
         ingredients_data = validated_data.pop('recipeingredient_set')  # remove ingredients from data

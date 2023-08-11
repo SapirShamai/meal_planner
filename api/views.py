@@ -7,6 +7,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from recipes.models import Ingredient, Recipe, RecipeIngredient
 from django.http import Http404
+from django.db.models import Q
 
 
 class Register(APIView):
@@ -100,7 +101,12 @@ class RecipeViewAndCreate(APIView):
 
     def get(self, request):
         """ list all ingredient """
-        recipes = Recipe.objects.all()
+        print(request.user)
+        if request.user.is_authenticated:  # to do: fix token authentication
+            recipes = Recipe.objects.filter(Q(is_public=True) | Q(user=request.user))
+        else:
+            recipes = Recipe.objects.filter(is_public=True)
+
         serializer = RecipeSerializer(recipes, many=True)
         return Response(serializer.data)
 
@@ -109,6 +115,9 @@ class RecipeViewAndCreate(APIView):
         recipe = request.data
         serializer = RecipeSerializer(data=recipe)
         if serializer.is_valid():
+            recipe = serializer.save(commit=False)  # save without commit to db
+            recipe.user = request.user  # create user
+            recipe.save()
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors)
@@ -120,7 +129,11 @@ class RecipeByID(APIView):
     def get_object(self, recipe_id):
         """ get recipe object """
         try:
-            return Recipe.objects.get(id=recipe_id)
+            recipe = Recipe.objects.get(id=recipe_id)
+            if not recipe.is_public and recipe.user != self.request.user:
+                raise PermissionError('You dont have permission to access this recipe')
+            return recipe
+
         except Recipe.DoesNotExist:
             raise Http404
 
@@ -149,4 +162,6 @@ class RecipeByID(APIView):
         """ add custom error handling """
         if isinstance(exc, Http404):
             return Response({"error": "Recipe does not exist"}, status=404)
+        if isinstance(exc, PermissionError):
+            return Response({'error': str(exc)}, status=403)
         return super().handle_exception(exc)
