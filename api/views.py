@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from recipes.models import Ingredient, Recipe, RecipeIngredient
 from django.http import Http404
 from django.db.models import Q
-
+from rest_framework.permissions import IsAuthenticated
 
 class Register(APIView):
     """ register new user and create token"""
@@ -33,7 +33,7 @@ class Login(APIView):
             user = authenticate(**serializer.data)
             if user is not None:
                 token = Token.objects.get(user=user)
-                data = {'token': str(token), 'username': user.username}
+                data = {'token': str(token), 'user_id': user.id}
                 return Response(data)
         return Response(serializer.errors)
 
@@ -98,10 +98,11 @@ class IngredientByID(APIView):
 
 class RecipeViewAndCreate(APIView):
     """ recipe api view for get and post request """
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        """ list all ingredient """
-        print(request.user)
+        """ list all recipes """
+        print(request.user)   #######################################
         if request.user.is_authenticated:  # to do: fix token authentication
             recipes = Recipe.objects.filter(Q(is_public=True) | Q(user=request.user))
         else:

@@ -1,4 +1,5 @@
 import requests
+from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from users.forms.register_form import RegisterForm
 from users.forms.login_form import LoginForm
@@ -36,11 +37,14 @@ def login_view(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user)
+            api_url = 'http://127.0.0.1:8000/api/login/'
+            response = requests.post(api_url, data=form.cleaned_data)
+            if response.status_code == 200:
+                print(response.json())
+                user = User.objects.filter(id=response.json()['user_id'])
+                if user:
+                    login(request, user[0])
+                    print(request.user)
                 return redirect('recipes:recipe_list')
             else:
                 messages.error(request, 'Invalid username or password.')
